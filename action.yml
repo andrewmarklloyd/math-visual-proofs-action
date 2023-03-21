@@ -1,0 +1,22 @@
+name: math-visual-proofs-action
+inputs:
+  fileName:
+    description: 'todo'
+    required: true
+  className:
+    description: 'todo'
+    required: true
+  repoURL:
+    description: 'todo'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - render
+    - --fileName
+    - ${{ inputs.fileName }}
+    - --className
+    - ${{ inputs.className }}
+    - --repoURL
+    - ${{ inputs.repoURL }}
