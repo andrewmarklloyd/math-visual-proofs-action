@@ -77,7 +77,11 @@ func requestRender(cmd *cobra.Command, args []string) {
 	mqttAddr := fmt.Sprintf("mqtt://%s:%s@%s", user, pw, strings.Split(url, "@")[1])
 
 	messageClient = mqtt.NewMQTTClient(mqttAddr, "math-visual-proofs-agent", func(client mqttC.Client) {
-		fmt.Println("Connected to MQTT server")
+		if client.IsConnected() {
+			fmt.Println("Connected to MQTT server")
+		} else {
+			fmt.Println("Not connected to MQTT server")
+		}
 	}, func(client mqttC.Client, err error) {
 		fmt.Println("Connection to MQTT server lost:", err)
 	})
@@ -109,7 +113,15 @@ func requestRender(cmd *cobra.Command, args []string) {
 		fmt.Println(err)
 	}
 
+	retry := 0
+	maxRetries := 10
 	for !serverAcked {
+		if retry > maxRetries {
+			fmt.Println("reached max retries waiting for server to acknowlege render request")
+			break
+		}
+		fmt.Println("waiting for server to acknowledge render request, retry ", retry)
+		retry++
 		time.Sleep(5 * time.Second)
 	}
 	messageClient.Cleanup()
