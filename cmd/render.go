@@ -90,6 +90,8 @@ func requestRender(cmd *cobra.Command, args []string) {
 		fmt.Println("connecting to mqtt:", err)
 	}
 
+	defer messageClient.Cleanup()
+
 	messageClient.Subscribe(mqtt.RenderAckTopic, func(message string) {
 		fmt.Println("server responded: ", message)
 		serverAcked = true
@@ -118,12 +120,11 @@ func requestRender(cmd *cobra.Command, args []string) {
 	for !serverAcked {
 		if retry > maxRetries {
 			fmt.Println("reached max retries waiting for server to acknowlege render request")
-			break
+			os.Exit(1)
 		}
 		fmt.Println("waiting for server to acknowledge render request, retry ", retry)
 		retry++
 		time.Sleep(5 * time.Second)
 	}
-	messageClient.Cleanup()
 
 }
