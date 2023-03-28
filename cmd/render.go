@@ -97,6 +97,16 @@ func requestRender(cmd *cobra.Command, args []string) {
 		serverAcked = true
 	})
 
+	messageClient.Subscribe(mqtt.RenderErrTopic, func(message string) {
+		fmt.Println("server encountered an error: ", message)
+		os.Exit(1)
+	})
+
+	messageClient.Subscribe(mqtt.RenderSuccessTopic, func(message string) {
+		fmt.Println("server successfully finshed render: ", message)
+		os.Exit(0)
+	})
+
 	time.Sleep(1 * time.Second)
 
 	m := mqtt.RenderMessage{
@@ -112,11 +122,12 @@ func requestRender(cmd *cobra.Command, args []string) {
 
 	err = messageClient.Publish(mqtt.RenderStartTopic, string(j))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error initiating render:", err)
+		os.Exit(1)
 	}
 
 	retry := 0
-	maxRetries := 10
+	maxRetries := 5
 	for !serverAcked {
 		if retry > maxRetries {
 			fmt.Println("reached max retries waiting for server to acknowlege render request")
@@ -124,7 +135,18 @@ func requestRender(cmd *cobra.Command, args []string) {
 		}
 		fmt.Println("waiting for server to acknowledge render request, retry ", retry)
 		retry++
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 
+	retry = 0
+	maxRetries = 12
+	for {
+		if retry > maxRetries {
+			fmt.Println("reached max retries waiting for server to successfully finish render. This does not necessarily mean the render failed but could still be running")
+			os.Exit(0)
+		}
+		fmt.Println("waiting for server to successfully finish render, retry ", retry)
+		retry++
+		time.Sleep(10 * time.Second)
+	}
 }
