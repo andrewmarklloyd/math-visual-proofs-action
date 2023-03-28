@@ -110,9 +110,9 @@ func requestRender(cmd *cobra.Command, args []string) {
 	time.Sleep(1 * time.Second)
 
 	m := mqtt.RenderMessage{
-		FileName:  "MovingAround.py",
-		ClassName: "MovingAround",
-		RepoURL:   "https://github.com/andrewmarklloyd/math-vis-proofs-test.git",
+		FileName:  fileName,
+		ClassName: className,
+		RepoURL:   repoURL,
 	}
 
 	j, err := json.Marshal(m)
