@@ -39,30 +39,21 @@ func requestRender(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fileName, err := cmd.Flags().GetString("fileName")
+	fileNames, err := cmd.Flags().GetString("fileNames")
 	if err != nil {
-		fmt.Println("error getting fileName flag", err)
+		fmt.Println("error getting fileNames flag", err)
 		os.Exit(1)
 	}
-	if fileName == "" {
-		fmt.Println("fileName flag is required")
-		os.Exit(1)
-	}
-
-	className, err := cmd.Flags().GetString("className")
-	if err != nil {
-		fmt.Println("error getting fileName flag", err)
-		os.Exit(1)
-	}
-	if className == "" {
-		fmt.Println("className flag is required")
+	if fileNames == "" {
+		fmt.Println("fileNames flag is required")
 		os.Exit(1)
 	}
 
 	fmt.Println("Initiating render request with server")
-	fmt.Println("className:", className)
-	fmt.Println("fileName:", fileName)
+	fmt.Println("fileNames:", fileNames)
 	fmt.Println("repoURL:", repoURL)
+
+	os.Exit(0)
 
 	var messageClient mqtt.MqttClient
 
@@ -110,8 +101,7 @@ func requestRender(cmd *cobra.Command, args []string) {
 	time.Sleep(1 * time.Second)
 
 	m := mqtt.RenderMessage{
-		FileName:  fileName,
-		ClassName: className,
+		FileNames: fileNames,
 		RepoURL:   repoURL,
 	}
 

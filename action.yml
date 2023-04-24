@@ -14,9 +14,7 @@ runs:
   image: 'Dockerfile'
   args:
     - render
-    - --fileName
-    - ${{ inputs.fileName }}
-    - --className
-    - ${{ inputs.className }}
     - --repoURL
     - ${{ inputs.repoURL }}
+    - --fileNames
+    - ${{ inputs.fileNames }}

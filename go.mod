@@ -3,7 +3,7 @@ module github.com/andrewmarklloyd/math-visual-proofs-action
 go 1.19
 
 require (
-	github.com/andrewmarklloyd/math-visual-proofs v0.0.0-20230328032033-17138adf64c7
+	github.com/andrewmarklloyd/math-visual-proofs v0.0.0-20230424032053-9921ce87b528
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/spf13/cobra v1.6.1
 )
