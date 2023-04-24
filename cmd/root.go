@@ -16,7 +16,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().String("fileName", "", "")
-	rootCmd.PersistentFlags().String("className", "", "")
+	rootCmd.PersistentFlags().String("fileNames", "", "")
 	rootCmd.PersistentFlags().String("repoURL", "", "")
 }
