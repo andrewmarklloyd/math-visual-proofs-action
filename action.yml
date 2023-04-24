@@ -1,9 +1,6 @@
 name: math-visual-proofs-action
 inputs:
-  fileName:
-    description: 'todo'
-    required: true
-  className:
+  fileNames:
     description: 'todo'
     required: true
   repoURL:
