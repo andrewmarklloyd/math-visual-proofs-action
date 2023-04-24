@@ -49,11 +49,11 @@ func requestRender(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	fileNamesSplit := strings.Split(strings.Trim(fileNames, " "), " ")
+
 	fmt.Println("Initiating render request with server")
 	fmt.Println("fileNames:", fileNames)
 	fmt.Println("repoURL:", repoURL)
-
-	os.Exit(0)
 
 	var messageClient mqtt.MqttClient
 
@@ -101,7 +101,7 @@ func requestRender(cmd *cobra.Command, args []string) {
 	time.Sleep(1 * time.Second)
 
 	m := mqtt.RenderMessage{
-		FileNames: fileNames,
+		FileNames: fileNamesSplit,
 		RepoURL:   repoURL,
 	}
 
