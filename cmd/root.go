@@ -18,4 +18,5 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().String("fileNames", "", "")
 	rootCmd.PersistentFlags().String("repoURL", "", "")
+	rootCmd.PersistentFlags().String("githubSHA", "", "")
 }

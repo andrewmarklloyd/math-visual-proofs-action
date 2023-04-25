@@ -6,6 +6,9 @@ inputs:
   repoURL:
     description: 'todo'
     required: true
+  githubSHA:
+    description: 'todo'
+    required: true
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -15,3 +18,5 @@ runs:
     - ${{ inputs.repoURL }}
     - --fileNames
     - ${{ inputs.fileNames }}
+    - --githubSHA
+    - ${{ inputs.githubSHA }}

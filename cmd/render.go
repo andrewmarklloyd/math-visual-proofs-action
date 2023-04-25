@@ -49,11 +49,22 @@ func requestRender(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	githubSHA, err := cmd.Flags().GetString("githubSHA")
+	if err != nil {
+		fmt.Println("error getting githubSHA flag", err)
+		os.Exit(1)
+	}
+	if githubSHA == "" {
+		fmt.Println("githubSHA flag is required")
+		os.Exit(1)
+	}
+
 	fileNamesSplit := strings.Split(strings.Trim(fileNames, " "), " ")
 
 	fmt.Println("Initiating render request with server")
 	fmt.Println("fileNames:", fileNames)
 	fmt.Println("repoURL:", repoURL)
+	fmt.Println("githubSHA:", githubSHA)
 
 	var messageClient mqtt.MqttClient
 
@@ -142,7 +153,7 @@ func requestRender(cmd *cobra.Command, args []string) {
 	}
 
 	retry := 0
-	maxRetries := 5
+	maxRetries := 30
 	for !serverAcked {
 		if retry > maxRetries {
 			fmt.Println("reached max retries waiting for server to acknowlege render request")
@@ -154,7 +165,7 @@ func requestRender(cmd *cobra.Command, args []string) {
 	}
 
 	retry = 0
-	maxRetries = 12
+	maxRetries = 30
 	for {
 		if retry > maxRetries {
 			fmt.Println("reached max retries waiting for server to successfully finish render. This does not necessarily mean the render failed but could still be running")
