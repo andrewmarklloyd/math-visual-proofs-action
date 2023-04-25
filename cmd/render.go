@@ -84,18 +84,42 @@ func requestRender(cmd *cobra.Command, args []string) {
 	defer messageClient.Cleanup()
 
 	messageClient.Subscribe(mqtt.RenderAckTopic, func(message string) {
-		fmt.Println("server responded: ", message)
-		serverAcked = true
+		m := mqtt.RenderFeedbackMessage{}
+		err := json.Unmarshal([]byte(message), &m)
+		if err != nil {
+			fmt.Println("error unmarshalling feedback message from server: ", err)
+			os.Exit(1)
+		}
+		if m.RepoURL == repoURL {
+			fmt.Println("server responded: ", m.Message)
+			serverAcked = true
+		}
 	})
 
 	messageClient.Subscribe(mqtt.RenderErrTopic, func(message string) {
-		fmt.Println("server encountered an error: ", message)
-		os.Exit(1)
+		m := mqtt.RenderFeedbackMessage{}
+		err := json.Unmarshal([]byte(message), &m)
+		if err != nil {
+			fmt.Println("error unmarshalling feedback message from server: ", err)
+			os.Exit(1)
+		}
+		if m.RepoURL == repoURL {
+			fmt.Println("server encountered an error: ", m.Message)
+			os.Exit(1)
+		}
 	})
 
 	messageClient.Subscribe(mqtt.RenderSuccessTopic, func(message string) {
-		fmt.Println("server successfully finshed render: ", message)
-		os.Exit(0)
+		m := mqtt.RenderFeedbackMessage{}
+		err := json.Unmarshal([]byte(message), &m)
+		if err != nil {
+			fmt.Println("error unmarshalling feedback message from server: ", err)
+			os.Exit(1)
+		}
+		if m.RepoURL == repoURL {
+			fmt.Println("server successfully finshed render: ", m.Message)
+			os.Exit(0)
+		}
 	})
 
 	time.Sleep(1 * time.Second)
