@@ -95,40 +95,27 @@ func requestRender(cmd *cobra.Command, args []string) {
 
 	defer messageClient.Cleanup()
 
+	emptyMessage := mqtt.RenderFeedbackMessage{}
+
 	messageClient.Subscribe(mqtt.RenderAckTopic, func(message string) {
-		m := mqtt.RenderFeedbackMessage{}
-		err := json.Unmarshal([]byte(message), &m)
-		if err != nil {
-			fmt.Println("error unmarshalling feedback message from server: ", err)
-			os.Exit(1)
-		}
-		if m.RepoURL == repoURL {
+		m := relevantRenderFeedbackMessage(message, repoURL, githubSHA)
+		if m != emptyMessage {
 			fmt.Println("server responded: ", m.Message)
 			serverAcked = true
 		}
 	})
 
 	messageClient.Subscribe(mqtt.RenderErrTopic, func(message string) {
-		m := mqtt.RenderFeedbackMessage{}
-		err := json.Unmarshal([]byte(message), &m)
-		if err != nil {
-			fmt.Println("error unmarshalling feedback message from server: ", err)
-			os.Exit(1)
-		}
-		if m.RepoURL == repoURL {
+		m := relevantRenderFeedbackMessage(message, repoURL, githubSHA)
+		if m != emptyMessage {
 			fmt.Println("server encountered an error: ", m.Message)
 			os.Exit(1)
 		}
 	})
 
 	messageClient.Subscribe(mqtt.RenderSuccessTopic, func(message string) {
-		m := mqtt.RenderFeedbackMessage{}
-		err := json.Unmarshal([]byte(message), &m)
-		if err != nil {
-			fmt.Println("error unmarshalling feedback message from server: ", err)
-			os.Exit(1)
-		}
-		if m.RepoURL == repoURL {
+		m := relevantRenderFeedbackMessage(message, repoURL, githubSHA)
+		if m != emptyMessage {
 			fmt.Println("server successfully finshed render: ", m.Message)
 			os.Exit(0)
 		}
@@ -175,4 +162,17 @@ func requestRender(cmd *cobra.Command, args []string) {
 		retry++
 		time.Sleep(10 * time.Second)
 	}
+}
+
+func relevantRenderFeedbackMessage(message, repoURL, githubSHA string) mqtt.RenderFeedbackMessage {
+	m := mqtt.RenderFeedbackMessage{}
+	if err := json.Unmarshal([]byte(message), &m); err != nil {
+		fmt.Println("error unmarshalling feedback message from server: ", err)
+		os.Exit(1)
+	}
+
+	if m.RepoURL == repoURL && m.GithubSHA == githubSHA {
+		return m
+	}
+	return mqtt.RenderFeedbackMessage{}
 }
