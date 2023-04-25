@@ -67,7 +67,8 @@ func requestRender(cmd *cobra.Command, args []string) {
 
 	mqttAddr := fmt.Sprintf("mqtt://%s:%s@%s", user, pw, strings.Split(url, "@")[1])
 
-	messageClient = mqtt.NewMQTTClient(mqttAddr, "math-visual-proofs-agent", func(client mqttC.Client) {
+	clientID := fmt.Sprintf("math-visual-proofs-agent-%d", time.Now().Unix())
+	messageClient = mqtt.NewMQTTClient(mqttAddr, clientID, func(client mqttC.Client) {
 		if client.IsConnected() {
 			fmt.Println("Connected to MQTT server")
 		} else {
