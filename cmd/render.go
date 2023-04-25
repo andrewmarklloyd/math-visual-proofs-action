@@ -126,6 +126,7 @@ func requestRender(cmd *cobra.Command, args []string) {
 	m := mqtt.RenderMessage{
 		FileNames: fileNamesSplit,
 		RepoURL:   repoURL,
+		GithubSHA: githubSHA,
 	}
 
 	j, err := json.Marshal(m)
