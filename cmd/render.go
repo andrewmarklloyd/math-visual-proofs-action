@@ -149,7 +149,7 @@ func requestRender(cmd *cobra.Command, args []string) {
 		}
 		fmt.Println("waiting for server to acknowledge render request, retry ", retry)
 		retry++
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 
 	retry = 0
